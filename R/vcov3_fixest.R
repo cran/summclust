@@ -78,7 +78,9 @@ vcov_CR3J.fixest <- function(
 
 
   if(obj$method != "feols"){
-    stop("'summclust' currently only works with estimation method 'feols'.")
+    cli::cli_abort(
+      "'summclust' currently only works with estimation method 'feols'."
+    )
   }
 
   call_env <- obj$call_env
@@ -88,15 +90,7 @@ vcov_CR3J.fixest <- function(
 
   N <- nrow(X)
   # k: see below
-
   w <- weights(obj)
-
-  if(!is.null(w)){
-    stop("Weighted least squares (WLS) is currently not supported for objects
-         of type fixest.")
-    X <- sqrt(w) * X
-    y <- sqrt(w) * y
-  }
 
   # get the clustering variable
 
@@ -138,13 +132,14 @@ vcov_CR3J.fixest <- function(
       )$message
     )
   ) {
-    stop(
+    cli::cli_abort(
       "In your model, you have specified multiple fixed effects,
       none of which are of type factor. While `fixest::feols()` handles
       this case gracefully,  `summclust()` currently cannot handle this
       case - please change the type of (at least one) fixed effect(s) to
       factor. If this does not solve the error, please report the issue
-      at https://github.com/s3alfisc/summclust")
+      at https://github.com/s3alfisc/summclust"
+    )
   }
 
   cluster_df <- model.frame(cluster, cluster_tmp, na.action = na.pass)
@@ -198,8 +193,8 @@ vcov_CR3J.fixest <- function(
       }
 
       g <- collapse::GRP(cluster_df, call = FALSE)
-      X <- collapse::fwithin(X, g)
-      y <- collapse::fwithin(y, g)
+      X <- collapse::fwithin(X, g, w = w)
+      y <- collapse::fwithin(y, g, w = w)
 
     } else {
 
@@ -208,9 +203,16 @@ vcov_CR3J.fixest <- function(
       add_fe_dummies <- model.matrix(fml_fe, model.frame(fml_fe , data = as.data.frame(add_fe)))
       # drop the intercept
       X <- as.matrix(collapse::add_vars(as.data.frame(X), add_fe_dummies))
+
     }
 
   }
+
+  if(!is.null(w)){
+    X <- sqrt(w) * X
+    y <- sqrt(w) * y
+  }
+
 
   if(cluster_fixef_outprojected){
     k <- ncol(X)

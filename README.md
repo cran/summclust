@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/s3alfisc/summclust/workflows/R-CMD-check/badge.svg)](https://github.com/s3alfisc/summclust/actions)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/summclust)](https://CRAN.R-project.org/package=summclust)
 <!-- [![pkgcheck](https://github.com/s3alfisc/summclust/workflows/pkgcheck/badge.svg)](https://github.com/s3alfisc/summclust/actions?query=workflow%3Apkgcheck) -->
 ![runiverse-package](https://s3alfisc.r-universe.dev/badges/summclust)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/summclust?color=blue)](https://cran.r-project.org/package=summclust)
@@ -17,6 +19,9 @@ coverage](https://codecov.io/gh/s3alfisc/summclust/branch/main/graph/badge.svg)]
 `{summclust}` is an R module for cluster level measures of leverage and
 influence, and further implements CRV3 and CRV3J cluster robust variance
 estimators.
+
+For an introduction to the package, take a look at its
+[vignette](https://s3alfisc.github.io/summclust/articles/summclust.html).
 
 For a quick overview of different CRV estimators, take a look at the
 [cluster robust variance estimation
@@ -36,11 +41,14 @@ For the Stata version of the package, see
 
 ## Installation
 
-You can install the development version of summclust from
+You can install the development version of summclust from CRAN,
 [GitHub](https://github.com/) and [r-universe](https://r-universe.dev/)
 with:
 
 ``` r
+# install from CRAN
+install.packages('summclust')
+
 # from r-universe (windows & mac, compiled R > 4.0 required)
 install.packages('summclust', repos ='https://s3alfisc.r-universe.dev')
 

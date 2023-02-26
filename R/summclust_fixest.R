@@ -3,7 +3,7 @@ summclust.fixest <- function(
     cluster,
     params,
     absorb_cluster_fixef = TRUE,
-    type,
+    type = "CRV3",
     ...) {
 
   #' Compute Influence and Leverage Metrics for objects of type `fixest`
@@ -95,7 +95,7 @@ summclust.fixest <- function(
 
   check_arg(cluster, "character scalar | formula")
   check_arg(params, "character scalar | character vector | formula ")
-  check_arg(type, "character scalar")
+  check_arg(type, "charin(CRV3, CRV3J)")
   check_arg(absorb_cluster_fixef, "logical scalar")
 
   if(inherits(params, "formula")){
@@ -107,7 +107,7 @@ summclust.fixest <- function(
       obj = obj,
       cluster = cluster,
       absorb_cluster_fixef = absorb_cluster_fixef,
-      type = "CRV3",
+      type = type,
       return_all = TRUE
     )
 
