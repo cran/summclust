@@ -1,3 +1,9 @@
+# New features since latest release
+
+# summclust 0.7
+
+* fixes a bug that turned NA values in cluster variables not contained in the model call into a distinct cluster. Instead, `summclust` now throws an error.
+
 # summclust 0.6
 
 * support for regression weights / weighted least squares

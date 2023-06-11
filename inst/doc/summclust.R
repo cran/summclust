@@ -37,14 +37,12 @@ plot(summclust_res)
 
 ## ---- warning = FALSE, message=FALSE------------------------------------------
 library(lmtest)
-library(fixest)
 
 vcov3J <- 
-vcov_CR3J(
-  lm_fit, 
-  cluster = ~ ind_code
-)
-
+  vcov_CR3J(
+    lm_fit, 
+    cluster = ~ ind_code
+  )
 
 all.equal(
   vcov3J, 
@@ -54,24 +52,29 @@ all.equal(
 df <- length(summclust_res$cluster) - 1
 
 # with lmtest
-CRV1 <- coeftest(lm_fit, sandwich::vcovCL(lm_fit, ~ind_code), df = df)
-CRV3 <- coeftest(lm_fit, vcov3J, df = df)
+CRV1 <- lmtest::coeftest(lm_fit, sandwich::vcovCL(lm_fit, ~ind_code), df = df)
+CRV3 <- lmtest::coeftest(lm_fit, vcov3J, df = df)
 
 CRV1[c("union", "race", "msp"),]
 CRV3[c("union", "race", "msp"),]
 
-confint(CRV1)[c("union", "race", "msp"),]
-confint(CRV3)[c("union", "race", "msp"),]
+stats::confint(CRV1)[c("union", "race", "msp"),]
+stats::confint(CRV3)[c("union", "race", "msp"),]
 
-# with fixest
+## -----------------------------------------------------------------------------
+library(fixest)
+
 feols_fit <- feols(
-  ln_wage ~ as.factor(grade) + as.factor(age) + as.factor(birth_yr) + union +  race + msp,
-  data = nlswork)
+  ln_wage ~ i(grade) + i(age) + i(birth_yr) + union +  race + msp,
+  data = nlswork
+)
 
-fixest::coeftable(
-  feols_fit,
-  vcov = summclust_res$vcov,
-  ssc = ssc(adj = FALSE, cluster.adj = FALSE)
-)[c("msp", "union", "race"),]
+# Store vcov into the fixest object
+feols_fit <- summary(
+  feols_fit, 
+  vcov = vcov_CR3J(feols_fit, cluster = ~ ind_code)
+)
 
+# Now it just works with fixest functions
+fixest::coeftable(feols_fit, keep = c("msp", "union", "race"))
 
