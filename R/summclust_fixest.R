@@ -37,35 +37,16 @@ summclust.fixest <- function(
   #' @export
   #'
   #' @examples
-  #' \donttest{
-  #' if(requireNamespace("summclust")
-  #'  && requireNamespace("haven")
-  #'  && requireNamespace("fixest")){
   #'
   #' library(summclust)
-  #' library(haven)
-  #' library(fixest)
+  #' data(mtcars)
+  #' mtcars
   #'
-  #' nlswork <- read_dta("http://www.stata-press.com/data/r9/nlswork.dta")
-  #' # drop NAs at the moment
-  #' nlswork <- nlswork[, c("ln_wage", "grade", "age", "birth_yr", "union", "race", "msp", "ind_code")]
-  #' nlswork <- na.omit(nlswork)
-  #'
-  #' feols_fit <- lm(
-  #'   ln_wage ~ union +  race + msp + as.factor(birth_yr) + as.factor(age) + as.factor(grade),
-  #'   data = nlswork)
-  #'
-  #' res <- summclust(
-  #'    obj = feols_fit,
-  #'    params = c("msp", "union"),
-  #'    cluster = ~ind_code,
-  #'  )
-  #'
-  #'  summary(res)
-  #'  tidy(res)
-  #'  plot(res)
-  #' }
-  #' }
+  #' fit <- lm(mpg ~ cyl + disp + hp, data = mtcars)
+  #' summ <- summclust(fit, params = ~cyl + disp, cluster = ~carb)
+  #' summary(summ)
+  #' tidy(summ)
+  #' plot(summ)
   #'
   #' @return An object of type `summclust`, including
   #' a CRV3 variance-covariance estimate as described in

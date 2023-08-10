@@ -10,8 +10,15 @@ test_that("test against stata - CVR3 inference", {
 
   skip_on_cran()
 
-  nlswork <-
-    read_dta("http://www.stata-press.com/data/r9/nlswork.dta")
+  url <- "http://www.stata-press.com/data/r9/nlswork.dta"
+  if (httr::http_error(url)) {
+    stop("No internet connection or data source broken. Sorry about that!")
+    return(NULL)
+  } else {
+    message("downloading the 'nlswork' dataset.")
+    nlswork <- read_dta(url)
+  }
+
   # drop NAs at the moment
   nlswork <- nlswork[, c("ln_wage",
                          "grade",
@@ -79,8 +86,16 @@ test_that("test against stata - leverage", {
   library(haven)
   library(fixest)
 
-  nlswork <-
-    read_dta("http://www.stata-press.com/data/r9/nlswork.dta")
+  url <- "http://www.stata-press.com/data/r9/nlswork.dta"
+  if (httr::http_error(url)) {
+    stop("No internet connection or data source broken. Sorry about that!")
+    return(NULL)
+  } else {
+    message("downloading the 'nlswork' dataset.")
+    nlswork <- read_dta(url)
+  }
+
+
   # drop NAs at the moment
   nlswork <- nlswork[, c("ln_wage",
                          "grade",
@@ -149,8 +164,16 @@ test_that("test against stata - leverage, fixef absorb", {
   library(haven)
   library(fixest)
 
-  nlswork <-
-    read_dta("http://www.stata-press.com/data/r9/nlswork.dta")
+  url <- "http://www.stata-press.com/data/r9/nlswork.dta"
+  if (httr::http_error(url)) {
+    stop("No internet connection or data source broken. Sorry about that!")
+    return(NULL)
+  } else {
+    message("downloading the 'nlswork' dataset.")
+    nlswork <- read_dta(url)
+  }
+
+
   # drop NAs at the moment
   nlswork <-
     nlswork[, c("ln_wage",

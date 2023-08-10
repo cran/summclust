@@ -359,54 +359,64 @@ objects of type <code>lm</code> (from <code>stats</code>) and
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>nlswork <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;http://www.stata-press.com/data/r9/nlswork.dta&quot;</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># drop NAs at the moment</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>nlswork <span class="ot">&lt;-</span> nlswork[, <span class="fu">c</span>(<span class="st">&quot;ln_wage&quot;</span>, <span class="st">&quot;grade&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;birth_yr&quot;</span>, <span class="st">&quot;union&quot;</span>, <span class="st">&quot;race&quot;</span>, <span class="st">&quot;msp&quot;</span>, <span class="st">&quot;ind_code&quot;</span>)]</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>nlswork <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(nlswork)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  ln_wage <span class="sc">~</span> <span class="fu">as.factor</span>(grade) <span class="sc">+</span> <span class="fu">as.factor</span>(age) <span class="sc">+</span> <span class="fu">as.factor</span>(birth_yr) <span class="sc">+</span> union <span class="sc">+</span>  race <span class="sc">+</span> msp,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> nlswork)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;http://www.stata-press.com/data/r9/nlswork.dta&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (httr<span class="sc">::</span><span class="fu">http_error</span>(url)) {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;No internet connection or data source broken. Sorry about that!&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;downloading the &#39;nlswork&#39; dataset.&quot;</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  nlswork <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(url)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>summclust_res <span class="ot">&lt;-</span> <span class="fu">summclust</span>(</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">obj =</span> lm_fit,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster =</span> <span class="sc">~</span>ind_code,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">c</span>(<span class="st">&quot;msp&quot;</span>, <span class="st">&quot;union&quot;</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># drop NAs at the moment</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>nlswork <span class="ot">&lt;-</span> nlswork[, <span class="fu">c</span>(<span class="st">&quot;ln_wage&quot;</span>, <span class="st">&quot;grade&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;birth_yr&quot;</span>, <span class="st">&quot;union&quot;</span>, <span class="st">&quot;race&quot;</span>, <span class="st">&quot;msp&quot;</span>, <span class="st">&quot;ind_code&quot;</span>)]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>nlswork <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(nlswork)</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># CRV3-based inference - exactly matches output of summclust-stata</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(summclust_res)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             coef     tstat         se      p_val  conf_int_l  conf_int_u</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; union  0.2039597  2.440122 0.08358587 0.03281561  0.01998847 0.387930980</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; msp   -0.0275151 -1.956404 0.01406412 0.07628064 -0.05847002 0.003439815</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(summclust_res)</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; summclust.lm(obj = lm_fit, cluster = ~ind_code, params = c(&quot;msp&quot;, </span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     &quot;union&quot;))</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  </span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of observations: 19130 </span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of clusters: 7 </span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  </span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             coef     tstat         se      p_val  conf_int_l  conf_int_u</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; union  0.2039597  2.440122 0.08358587 0.03281561  0.01998847 0.387930980</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; msp   -0.0275151 -1.956404 0.01406412 0.07628064 -0.05847002 0.003439815</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  </span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 N_G    leverage partial-leverage-msp partial-leverage-union</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Min.      38.000000  0.09332052         0.0006662968            0.001622359</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1st Qu.  172.000000  0.70440923         0.0048899422            0.009133996</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Median   995.500000  3.51549151         0.0379535242            0.056682344</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Mean    1594.166667  5.41666667         0.0833333333            0.083333333</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3rd Qu. 2047.250000  6.41132962         0.1004277711            0.106083114</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Max.    6335.000000 20.28918187         0.3597669210            0.312994532</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; coefvar    1.187237  1.15296458         1.3313784379            1.141326117</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            beta-msp beta-union</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Min.    -0.03320040  0.1624754</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1st Qu. -0.02893131  0.1994694</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Median  -0.02776470  0.2045197</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Mean    -0.02691999  0.2053997</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3rd Qu. -0.02610221  0.2056569</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Max.    -0.01583453  0.2754228</span></span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; coefvar  0.16289813  0.1279443</span></span></code></pre></div>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  ln_wage <span class="sc">~</span> <span class="fu">as.factor</span>(grade) <span class="sc">+</span> <span class="fu">as.factor</span>(age) <span class="sc">+</span> <span class="fu">as.factor</span>(birth_yr) <span class="sc">+</span> union <span class="sc">+</span>  race <span class="sc">+</span> msp,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> nlswork)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>summclust_res <span class="ot">&lt;-</span> <span class="fu">summclust</span>(</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">obj =</span> lm_fit,</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster =</span> <span class="sc">~</span>ind_code,</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">c</span>(<span class="st">&quot;msp&quot;</span>, <span class="st">&quot;union&quot;</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># CRV3-based inference - exactly matches output of summclust-stata</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(summclust_res)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             coef     tstat         se      p_val  conf_int_l  conf_int_u</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; union  0.2039597  2.440122 0.08358587 0.03281561  0.01998847 0.387930980</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; msp   -0.0275151 -1.956404 0.01406412 0.07628064 -0.05847002 0.003439815</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(summclust_res)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; summclust.lm(obj = lm_fit, cluster = ~ind_code, params = c(&quot;msp&quot;, </span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     &quot;union&quot;))</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  </span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of observations: 19130 </span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of clusters: 7 </span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  </span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             coef     tstat         se      p_val  conf_int_l  conf_int_u</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; union  0.2039597  2.440122 0.08358587 0.03281561  0.01998847 0.387930980</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; msp   -0.0275151 -1.956404 0.01406412 0.07628064 -0.05847002 0.003439815</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  </span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 N_G    leverage partial-leverage-msp partial-leverage-union</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Min.      38.000000  0.09332052         0.0006662968            0.001622359</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1st Qu.  172.000000  0.70440923         0.0048899422            0.009133996</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Median   995.500000  3.51549151         0.0379535242            0.056682344</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Mean    1594.166667  5.41666667         0.0833333333            0.083333333</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3rd Qu. 2047.250000  6.41132962         0.1004277711            0.106083114</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Max.    6335.000000 20.28918187         0.3597669210            0.312994532</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; coefvar    1.187237  1.15296458         1.3313784379            1.141326117</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            beta-msp beta-union</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Min.    -0.03320040  0.1624754</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1st Qu. -0.02893131  0.1994694</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Median  -0.02776470  0.2045197</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Mean    -0.02691999  0.2053997</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3rd Qu. -0.02610221  0.2056569</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Max.    -0.01583453  0.2754228</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; coefvar  0.16289813  0.1279443</span></span></code></pre></div>
 <p>To visually inspect the leverage statistics, use the
 <code>plot</code> method</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(summclust_res)</span>
@@ -474,25 +484,24 @@ with the <code>lmtest()</code> and <code>fixest</code> packages.</p>
 <span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; race  -0.12811995 -0.044276312</span></span>
 <span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; msp   -0.05847002  0.003439815</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fixest)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;fixest&#39; was built under R version 4.2.3</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>feols_fit <span class="ot">&lt;-</span> <span class="fu">feols</span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  ln_wage <span class="sc">~</span> <span class="fu">i</span>(grade) <span class="sc">+</span> <span class="fu">i</span>(age) <span class="sc">+</span> <span class="fu">i</span>(birth_yr) <span class="sc">+</span> union <span class="sc">+</span>  race <span class="sc">+</span> msp,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> nlswork</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Store vcov into the fixest object</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>feols_fit <span class="ot">&lt;-</span> <span class="fu">summary</span>(</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  feols_fit, </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcov =</span> <span class="fu">vcov_CR3J</span>(feols_fit, <span class="at">cluster =</span> <span class="sc">~</span> ind_code)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Now it just works with fixest functions</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>fixest<span class="sc">::</span><span class="fu">coeftable</span>(feols_fit, <span class="at">keep =</span> <span class="fu">c</span>(<span class="st">&quot;msp&quot;</span>, <span class="st">&quot;union&quot;</span>, <span class="st">&quot;race&quot;</span>))</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Estimate Std. Error   t value     Pr(&gt;|t|)</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; union  0.20395972 0.08358587  2.440122 1.469134e-02</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; race  -0.08619813 0.01904684 -4.525586 6.059226e-06</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; msp   -0.02751510 0.01406412 -1.956404 5.043213e-02</span></span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>feols_fit <span class="ot">&lt;-</span> <span class="fu">feols</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  ln_wage <span class="sc">~</span> <span class="fu">i</span>(grade) <span class="sc">+</span> <span class="fu">i</span>(age) <span class="sc">+</span> <span class="fu">i</span>(birth_yr) <span class="sc">+</span> union <span class="sc">+</span>  race <span class="sc">+</span> msp,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> nlswork</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Store vcov into the fixest object</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>feols_fit <span class="ot">&lt;-</span> <span class="fu">summary</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  feols_fit, </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcov =</span> <span class="fu">vcov_CR3J</span>(feols_fit, <span class="at">cluster =</span> <span class="sc">~</span> ind_code)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Now it just works with fixest functions</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>fixest<span class="sc">::</span><span class="fu">coeftable</span>(feols_fit, <span class="at">keep =</span> <span class="fu">c</span>(<span class="st">&quot;msp&quot;</span>, <span class="st">&quot;union&quot;</span>, <span class="st">&quot;race&quot;</span>))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Estimate Std. Error   t value     Pr(&gt;|t|)</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; union  0.20395972 0.08358587  2.440122 1.469134e-02</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; race  -0.08619813 0.01904684 -4.525586 6.059226e-06</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; msp   -0.02751510 0.01406412 -1.956404 5.043213e-02</span></span></code></pre></div>
 <p>The p-value and confidence intervals for
 <code>fixest::coeftable()</code> differ from
 <code>lmtest::coeftest()</code> and <code>summclust::coeftable()</code>.

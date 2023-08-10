@@ -40,40 +40,15 @@ jackknife as described in MacKinnon, Nielsen & Webb
 (2022) for objects of type \code{fixest}
 }
 \examples{
-\donttest{
-
-if(requireNamespace("summclust")
-&& requireNamespace("haven")
-&& requireNamespace("fixest")){
 
 library(summclust)
-library(haven)
 library(fixest)
+data(mtcars)
+mtcars
 
-nlswork <- read_dta("http://www.stata-press.com/data/r9/nlswork.dta")
-# drop NAs at the moment
-nlswork <- nlswork[, c("ln_wage", "grade", "age", "birth_yr", "union", "race", "msp", "ind_code")]
-nlswork <- na.omit(nlswork)
+fit <- feols(mpg ~ cyl + disp + hp, data = mtcars)
+summ <- vcov_CR3J(fit, cluster = ~carb)
 
-feols_fit <- feols(
-  ln_wage ~ union +  race + msp + as.factor(birth_yr) + as.factor(age) + as.factor(grade),
-  data = nlswork)
-
-# CRV3 standard errors
-vcov <- vcov_CR3J(
-   obj = feols_fit,
-   cluster = ~ind_code,
-   type = "CRV3"
-)
-
-# CRV3 standard errors
-vcovJN <- vcov_CR3J(
-   obj = feols_fit,
-   cluster = ~ind_code,
-   type = "CRV3J",
-)
-}
-}
 }
 \references{
 MacKinnon, James G., Morten Ørregaard Nielsen, and Matthew D. Webb.

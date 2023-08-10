@@ -31,39 +31,23 @@ vcov_CR3J.lm <- function(
   #'
   #' @export
   #'
-  #'@return An object of class \code{vcov_CR3J}
-  #'
   #' @examples
-  #' \donttest{
-  #' if(requireNamespace("summclust") && requireNamespace("haven")){
   #'
   #' library(summclust)
-  #' library(haven)
+  #' data(mtcars)
+  #' mtcars
   #'
-  #' nlswork <- read_dta("http://www.stata-press.com/data/r9/nlswork.dta")
-  #' # drop NAs at the moment
-  #' nlswork <- nlswork[, c("ln_wage", "grade", "age", "birth_yr", "union", "race", "msp", "ind_code")]
-  #' nlswork <- na.omit(nlswork)
+  #' fit <- lm(mpg ~ cyl + disp + hp, data = mtcars)
+  #' summ <- vcov_CR3J(fit, cluster = ~carb)
+  #' library(summclust)
+  #' data(mtcars)
+  #' mtcars
   #'
-  #' lm_fit <- lm(
-  #'   ln_wage ~ union +  race + msp + as.factor(birth_yr) + as.factor(age) + as.factor(grade),
-  #'   data = nlswork)
+  #' fit <- lm(mpg ~ cyl + disp + hp, data = mtcars)
+  #' summ <- vcov_CR3J(fit, cluster = ~carb)
   #'
-  #' # CRV3 standard errors
-  #' vcov <- vcov_CR3J(
-  #'    obj = lm_fit,
-  #'    cluster = ~ind_code,
-  #'    type = "CRV3"
-  #' )
-  #'
-  #' # CRV3 standard errors
-  #' vcovJN <- vcov_CR3J(
-  #'    obj = lm_fit,
-  #'    cluster = ~ind_code,
-  #'    type = "CRV3J",
-  #' )
-  #' }
-  #' }
+  #'@return An object of class \code{vcov_CR3J}
+
 
   check_arg(return_all, "logical scalar")
   check_arg(cluster, "character scalar | formula")
